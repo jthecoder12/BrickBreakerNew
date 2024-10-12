@@ -1,5 +1,6 @@
 package brickbreaker.main;
 
+import brickbreaker.main.components.BoxCollider;
 import brickbreaker.main.components.CircleComponent;
 import brickbreaker.main.components.RectComponent;
 import com.badlogic.ashley.core.Entity;
@@ -26,9 +27,11 @@ public class Main extends ApplicationAdapter {
 
         paddle = engine.createEntity();
         paddle.add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(150, 30)));
+        paddle.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(150, 30)));
 
         ball = engine.createEntity();
         ball.add(new CircleComponent(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), 15));
+        ball.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), new Dimension(30, 30)));
     }
 
     @Override
@@ -41,10 +44,21 @@ public class Main extends ApplicationAdapter {
 
         ball.getComponent(CircleComponent.class).position.add(0, 10*ballDirection);
 
+        paddle.getComponent(BoxCollider.class).updatePosition(paddle.getComponent(RectComponent.class).position);
+        ball.getComponent(BoxCollider.class).updatePosition(ball.getComponent(CircleComponent.class).position);
+
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
         } else if(Gdx.input.isKeyPressed(Input.Keys.D)) {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(15, 0));
+        }
+
+        if(paddle.getComponent(BoxCollider.class).checkWith(ball.getComponent(BoxCollider.class))) {
+            ballDirection = 1;
+        }
+
+        if(ball.getComponent(CircleComponent.class).position.y >= Gdx.graphics.getHeight()) {
+            ballDirection = -1;
         }
     }
 }

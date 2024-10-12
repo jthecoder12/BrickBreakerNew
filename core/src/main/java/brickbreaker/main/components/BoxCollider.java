@@ -14,7 +14,7 @@ public class BoxCollider implements Component {
         box = new Rectangle();
 
         box.setPosition(position);
-        box.setSize((float)size.getWidth(), (float)size.getHeight());
+        box.setSize((float)size.getWidth()+20, (float)size.getHeight()+20);
     }
 
     public void updatePosition(Vector2 position) {
@@ -25,7 +25,7 @@ public class BoxCollider implements Component {
         return box.overlaps(boxCollider.getBox());
     }
 
-    public Rectangle getBox() {
+    private Rectangle getBox() {
         return box;
     }
 }
