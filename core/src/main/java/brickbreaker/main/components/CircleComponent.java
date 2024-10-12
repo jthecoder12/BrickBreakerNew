@@ -4,19 +4,17 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.Dimension;
+public class CircleComponent extends Shape {
+    private final float radius;
 
-public class RectComponent extends Shape {
-    private final Dimension size;
-
-    public RectComponent(@NotNull Vector2 position, @NotNull Dimension size) {
+    public CircleComponent(@NotNull Vector2 position, float radius) {
         init(position);
-        this.size = size;
+        this.radius = radius;
     }
 
     public void render() {
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.rect(position.x, position.y, size.width, size.height);
+        renderer.circle(position.x, position.y, radius);
         renderer.end();
     }
 }
