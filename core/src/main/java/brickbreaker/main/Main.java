@@ -18,6 +18,7 @@ import java.awt.Dimension;
 public class Main extends ApplicationAdapter {
     private Entity paddle;
     private Entity ball;
+    private byte ballDirection = -1;
 
     @Override
     public void create() {
@@ -37,6 +38,8 @@ public class Main extends ApplicationAdapter {
 
         paddle.getComponent(RectComponent.class).render();
         ball.getComponent(CircleComponent.class).render();
+
+        ball.getComponent(CircleComponent.class).position.add(0, 10*ballDirection);
 
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
