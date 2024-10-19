@@ -14,7 +14,7 @@ public class BoxCollider implements Component {
         box = new Rectangle();
 
         box.setPosition(position);
-        box.setSize((float)size.width, (float)size.height+20);
+        box.setSize((float)size.width-15, (float)size.height+10);
     }
 
     public void updatePosition(Vector2 position) {

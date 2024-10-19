@@ -34,20 +34,22 @@ public class Main extends ApplicationAdapter {
     private Stage stage;
     private Controller controller;
     private final ArrayList<Brick> bricks = new ArrayList<>();
+    private boolean mouseMode = false;
 
     @Override
     public void create() {
         PooledEngine engine = new PooledEngine();
 
         paddle = engine.createEntity();
-        paddle.add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(150, 30)));
-        paddle.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(150, 30)));
+        paddle.add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 15)));
+        paddle.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 15)));
 
         ball = engine.createEntity();
         ball.add(new CircleComponent(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), 15));
         ball.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), new Dimension(30, 30)));
 
-        bricks.add(new Brick(engine, new Vector2(650, 400)));
+        bricks.add(new Brick(engine, new Vector2(0, Gdx.graphics.getHeight()/1.04499274311f)));
+        bricks.add(new Brick(engine, new Vector2(Gdx.graphics.getWidth()/1.10249784668f, Gdx.graphics.getHeight()/1.04499274311f)));
 
         controller = Controllers.getCurrent();
 
@@ -65,6 +67,7 @@ public class Main extends ApplicationAdapter {
 
         scoreLabel = new Label("Score: 0", labelStyle);
         scoreLabel.setPosition(0, Gdx.graphics.getHeight()-50);
+        scoreLabel.setColor(1, 0, 0, 1);
         stage.addActor(scoreLabel);
     }
 
@@ -95,10 +98,26 @@ public class Main extends ApplicationAdapter {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(15, 0));
         }
 
-        if(paddle.getComponent(BoxCollider.class).checkWith(ball.getComponent(BoxCollider.class))) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+            mouseMode = !mouseMode;
+        }
+
+        if(mouseMode) {
+            paddle.getComponent(RectComponent.class).position.x = Gdx.input.getX();
+        }
+
+        if(paddle.getComponent(BoxCollider.class).checkWith(ball.getComponent(BoxCollider.class)) && ball.getComponent(CircleComponent.class).position.y > Gdx.graphics.getHeight()/2f-235) {
+            ball.getComponent(CircleComponent.class).position.y += 10;
+
             ballDirection = 1;
 
             sideDirection = (byte)-sideDirection;
+
+            if(controller != null) {
+                if(controller.canVibrate()) {
+                    controller.startVibration(100, 0.5f);
+                }
+            }
         }
 
         if(ball.getComponent(CircleComponent.class).position.y >= Gdx.graphics.getHeight()) {
