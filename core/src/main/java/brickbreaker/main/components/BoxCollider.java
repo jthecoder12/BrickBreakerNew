@@ -14,11 +14,13 @@ public class BoxCollider implements Component {
         box = new Rectangle();
 
         box.setPosition(position);
-        box.setSize((float)size.width-15, (float)size.height+10);
+        box.setSize((float)size.width, (float)size.height+10);
     }
 
-    public void updatePosition(Vector2 position) {
+    public void updatePosition(@NotNull Vector2 position) {
         box.setPosition(position);
+        System.out.println(position.x);
+        System.out.println(box.x);
     }
 
     public boolean checkWith(@NotNull BoxCollider boxCollider) {

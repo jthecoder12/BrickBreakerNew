@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import org.w3c.dom.css.Rect;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -41,8 +42,8 @@ public class Main extends ApplicationAdapter {
         PooledEngine engine = new PooledEngine();
 
         paddle = engine.createEntity();
-        paddle.add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 15)));
-        paddle.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 15)));
+        paddle.add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 20)));
+        paddle.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 20)));
 
         ball = engine.createEntity();
         ball.add(new CircleComponent(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), 15));
@@ -111,7 +112,13 @@ public class Main extends ApplicationAdapter {
 
             ballDirection = 1;
 
-            sideDirection = (byte)-sideDirection;
+            if(ball.getComponent(CircleComponent.class).position.x <= paddle.getComponent(RectComponent.class).position.x) {
+                sideDirection = -1;
+            } else {
+                sideDirection = 1;
+                System.out.println(ball.getComponent(CircleComponent.class).position.x);
+                System.out.println(paddle.getComponent(RectComponent.class).position.x);
+            }
 
             if(controller != null) {
                 if(controller.canVibrate()) {
