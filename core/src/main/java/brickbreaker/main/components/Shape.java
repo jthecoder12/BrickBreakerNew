@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
 
-public class Shape implements Component {
+public abstract class Shape implements Component {
     protected ShapeRenderer renderer;
     public Vector2 position;
 

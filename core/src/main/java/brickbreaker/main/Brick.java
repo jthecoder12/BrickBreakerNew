@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.Dimension;
 
-public class Brick extends Entity {
+public final class Brick extends Entity {
     public Brick(@NotNull Engine engine, @NotNull Vector2 position) {
         engine.addEntity(this);
 

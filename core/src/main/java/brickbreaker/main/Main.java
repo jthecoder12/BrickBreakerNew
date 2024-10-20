@@ -1,9 +1,11 @@
 package brickbreaker.main;
 
 import brickbreaker.main.components.BoxCollider;
+import brickbreaker.main.components.CircleCollider;
 import brickbreaker.main.components.CircleComponent;
 import brickbreaker.main.components.RectComponent;
-import com.badlogic.ashley.core.Entity;
+import brickbreaker.main.objects.Ball;
+import brickbreaker.main.objects.Paddle;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -13,21 +15,18 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import org.w3c.dom.css.Rect;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class Main extends ApplicationAdapter {
-    private Entity paddle;
-    private Entity ball;
+public final class Main extends ApplicationAdapter {
+    private Paddle paddle;
+    private Ball ball;
     private byte ballDirection = -1;
     private byte sideDirection = -1;
     private int score;
@@ -41,30 +40,19 @@ public class Main extends ApplicationAdapter {
     public void create() {
         PooledEngine engine = new PooledEngine();
 
-        paddle = engine.createEntity();
-        paddle.add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 20)));
-        paddle.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 20)));
-
-        ball = engine.createEntity();
-        ball.add(new CircleComponent(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), 15));
-        ball.add(new BoxCollider(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), new Dimension(30, 30)));
+        paddle = new Paddle(engine);
+        ball = new Ball(engine);
 
         bricks.add(new Brick(engine, new Vector2(0, Gdx.graphics.getHeight()/1.04499274311f)));
         bricks.add(new Brick(engine, new Vector2(Gdx.graphics.getWidth()/1.10249784668f, Gdx.graphics.getHeight()/1.04499274311f)));
 
         controller = Controllers.getCurrent();
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Varela_Round/VarelaRound-Regular.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        BitmapFont font = generator.generateFont(parameter);
-        generator.dispose();
-
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
+        labelStyle.font = new BitmapFont(Gdx.files.internal("Varela_Round/Varela_Round.fnt"));
 
         scoreLabel = new Label("Score: 0", labelStyle);
         scoreLabel.setPosition(0, Gdx.graphics.getHeight()-50);
@@ -91,7 +79,7 @@ public class Main extends ApplicationAdapter {
         ball.getComponent(CircleComponent.class).position.add((speed /2f-2)*sideDirection, speed *ballDirection);
 
         paddle.getComponent(BoxCollider.class).updatePosition(paddle.getComponent(RectComponent.class).position);
-        ball.getComponent(BoxCollider.class).updatePosition(ball.getComponent(CircleComponent.class).position);
+        ball.getComponent(CircleCollider.class).updatePosition(ball.getComponent(CircleComponent.class).position);
 
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
@@ -107,7 +95,7 @@ public class Main extends ApplicationAdapter {
             paddle.getComponent(RectComponent.class).position.x = Gdx.input.getX();
         }
 
-        if(paddle.getComponent(BoxCollider.class).checkWith(ball.getComponent(BoxCollider.class)) && ball.getComponent(CircleComponent.class).position.y > Gdx.graphics.getHeight()/2f-235) {
+        if(paddle.getComponent(BoxCollider.class).checkWith(ball.getComponent(CircleCollider.class)) && ball.getComponent(CircleComponent.class).position.y > Gdx.graphics.getHeight()/2f-235) {
             ball.getComponent(CircleComponent.class).position.y += 10;
 
             ballDirection = 1;
@@ -140,7 +128,7 @@ public class Main extends ApplicationAdapter {
         for(int i=0; i<bricks.size(); i++) {
             bricks.get(i).render();
 
-            if(bricks.get(i).getComponent(BoxCollider.class).checkWith(ball.getComponent(BoxCollider.class))) {
+            if(bricks.get(i).getComponent(BoxCollider.class).checkWith(ball.getComponent(CircleCollider.class))) {
                 bricks.remove(bricks.get(i));
 
                 ballDirection = -1;
@@ -150,13 +138,13 @@ public class Main extends ApplicationAdapter {
             }
         }
 
-        if(controller != null) {
+        /*if(controller != null) {
             if(controller.getButton(controller.getMapping().buttonDpadLeft)) {
                 paddle.getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
             } else if(controller.getButton(controller.getMapping().buttonDpadRight)) {
                 paddle.getComponent(RectComponent.class).position.add(new Vector2(15, 0));
             }
-        }
+        }*/
 
         stage.act(deltaTime);
         stage.draw();

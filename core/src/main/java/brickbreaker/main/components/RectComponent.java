@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.Dimension;
 
-public class RectComponent extends Shape {
+public final class RectComponent extends Shape {
     private final Dimension size;
 
     public RectComponent(@NotNull Vector2 position, @NotNull Dimension size) {
