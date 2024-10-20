@@ -6,12 +6,12 @@ import brickbreaker.main.Main;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import static org.lwjgl.glfw.GLFW.glfwInitHint;
 import static org.lwjgl.glfw.GLFW.GLFW_PLATFORM;
 import static org.lwjgl.glfw.GLFW.GLFW_PLATFORM_X11;
-import static org.lwjgl.glfw.GLFW.glfwInitHint;
 
 /** Launches the desktop (LWJGL3) application. */
-public final class Lwjgl3Launcher {
+public class Lwjgl3Launcher {
     public static void main(String[] args) {
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
         createApplication();
@@ -39,7 +39,6 @@ public final class Lwjgl3Launcher {
         //// useful for testing performance, but can also be very stressful to some hardware.
         //// You may also need to configure GPU drivers to fully disable Vsync; this can cause screen tearing.
         configuration.setWindowedMode(1280, 720);
-        configuration.setResizable(false);
         //// You can change these files; they are in lwjgl3/src/main/resources/ .
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         return configuration;

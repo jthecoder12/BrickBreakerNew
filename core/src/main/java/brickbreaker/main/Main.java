@@ -10,24 +10,22 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-//import com.badlogic.gdx.controllers.Controller;
-//import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.kotcrab.vis.ui.VisUI;
+import com.kotcrab.vis.ui.widget.VisWindow;
+import com.kotcrab.vis.ui.widget.VisCheckBox;
 
 import java.util.ArrayList;
 
@@ -40,8 +38,8 @@ public final class Main extends ApplicationAdapter {
     private int score;
     private Label scoreLabel;
     private Stage stage;
-    private CheckBox mouseModeCheckbox;
-    //private Controller controller;
+    private VisCheckBox mouseModeCheckbox;
+    private Controller controller;
     private BitmapFont font;
     private final ArrayList<Brick> bricks = new ArrayList<>();
 
@@ -55,22 +53,16 @@ public final class Main extends ApplicationAdapter {
         bricks.add(new Brick(engine, new Vector2(0, Gdx.graphics.getHeight()/1.04499274311f)));
         bricks.add(new Brick(engine, new Vector2(Gdx.graphics.getWidth()/1.10249784668f, Gdx.graphics.getHeight()/1.04499274311f)));
 
-        //controller = Controllers.getCurrent();
+        controller = Controllers.getCurrent();
 
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
+        VisUI.load();
+
         font = new BitmapFont(Gdx.files.internal("Varela_Round/Varela_Round.fnt"));
 
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB565);
-        pixmap.setColor(57f/255f, 57f/255f, 58f/255f, 1);
-        pixmap.fill();
-
-        Window.WindowStyle windowStyle = new Window.WindowStyle();
-        windowStyle.titleFont = font;
-        windowStyle.background = new TextureRegionDrawable(new Texture(pixmap));
-
-        Window window = new Window("Settings", windowStyle);
+        VisWindow window = new VisWindow("Settings");
         window.setResizable(true);
         window.setVisible(false);
         window.setSize(300, 300);
@@ -98,10 +90,7 @@ public final class Main extends ApplicationAdapter {
             }
         });
 
-        CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
-        checkBoxStyle.font = font;
-
-        mouseModeCheckbox = new CheckBox("Mouse Mode", checkBoxStyle);
+        mouseModeCheckbox = new VisCheckBox("Mouse Mode");
         window.add(mouseModeCheckbox);
 
         stage.addActor(scoreLabel);
@@ -151,11 +140,11 @@ public final class Main extends ApplicationAdapter {
                 sideDirection = 1;
             }
 
-            /*if(controller != null) {
+            if(controller != null) {
                 if(controller.canVibrate()) {
                     controller.startVibration(100, 0.5f);
                 }
-            }*/
+            }
         }
 
         if(ball.getComponent(CircleComponent.class).position.y >= Gdx.graphics.getHeight()) {
@@ -181,13 +170,13 @@ public final class Main extends ApplicationAdapter {
             }
         }
 
-        /*if(controller != null) {
+        if(controller != null) {
             if(controller.getButton(controller.getMapping().buttonDpadLeft)) {
                 paddle.getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
             } else if(controller.getButton(controller.getMapping().buttonDpadRight)) {
                 paddle.getComponent(RectComponent.class).position.add(new Vector2(15, 0));
             }
-        }*/
+        }
 
         stage.act(deltaTime);
         stage.draw();
@@ -197,5 +186,6 @@ public final class Main extends ApplicationAdapter {
     public void dispose() {
         font.dispose();
         stage.dispose();
+        VisUI.dispose();
     }
 }
