@@ -11,6 +11,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
@@ -27,6 +28,7 @@ import imgui.ImGuiStyle;
 import imgui.type.ImBoolean;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public final class Main extends ApplicationAdapter {
@@ -42,6 +44,8 @@ public final class Main extends ApplicationAdapter {
     private Stage stage;
     private Controller controller;
     private BitmapFont font;
+    private Sound sound;
+    private final Random random = new Random();
     private final ArrayList<Brick> bricks = new ArrayList<>();
 
     @Override
@@ -86,6 +90,8 @@ public final class Main extends ApplicationAdapter {
         style.setPopupRounding(borderRadius);
 
         ImGui.styleColorsDark(style);
+
+        sound = Gdx.audio.newSound(Gdx.files.internal("ping_pong_8bit_beeep.ogg"));
     }
 
     @Override
@@ -103,8 +109,9 @@ public final class Main extends ApplicationAdapter {
         paddle.getComponent(RectComponent.class).render();
         ball.getComponent(CircleComponent.class).render();
 
-        int speed = 10;
-        ball.getComponent(CircleComponent.class).position.add((speed /2f-2)*sideDirection, speed *ballDirection);
+        // Speed
+        int speed = 5;
+        ball.getComponent(CircleComponent.class).position.add(speed*1.5f*sideDirection, speed*ballDirection);
 
         paddle.getComponent(BoxCollider.class).updatePosition(paddle.getComponent(RectComponent.class).position);
         ball.getComponent(CircleCollider.class).updatePosition(ball.getComponent(CircleComponent.class).position);
@@ -126,10 +133,16 @@ public final class Main extends ApplicationAdapter {
 
             ballDirection = 1;
 
-            if(ball.getComponent(CircleComponent.class).position.x <= paddle.getComponent(RectComponent.class).position.x) {
+            if(ball.getComponent(CircleComponent.class).position.x < paddle.getComponent(RectComponent.class).position.x+(Gdx.graphics.getWidth()/2f-30)/4f) {
                 sideDirection = -1;
-            } else {
+            } else if(ball.getComponent(CircleComponent.class).position.x > paddle.getComponent(RectComponent.class).position.x+(Gdx.graphics.getWidth()/2f-30)/4f) {
                 sideDirection = 1;
+            } else {
+                if(random.nextInt(2) == 0) {
+                    sideDirection = 1;
+                } else {
+                    sideDirection = -1;
+                }
             }
 
             if(controller != null) {
@@ -137,16 +150,42 @@ public final class Main extends ApplicationAdapter {
                     controller.startVibration(100, 0.5f);
                 }
             }
+
+            sound.play(1);
         }
 
-        if(ball.getComponent(CircleComponent.class).position.y >= Gdx.graphics.getHeight()) {
+        // Top
+        if(ball.getComponent(CircleComponent.class).position.y >= Gdx.graphics.getHeight()-10) {
             ballDirection = -1;
 
-            sideDirection = (byte)-sideDirection;
+            sound.play(1);
         }
 
-        if(ball.getComponent(CircleComponent.class).position.y <= -Gdx.graphics.getHeight()) {
-            ball.getComponent(CircleComponent.class).position.set(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f));
+        // Reset
+        if(ball.getComponent(CircleComponent.class).position.y <= 0) {
+            ballDirection = -1;
+            sideDirection = -1;
+
+            new Thread(() -> {
+                long time = System.currentTimeMillis();
+
+                while(System.currentTimeMillis() < time+500) {
+                    Gdx.app.postRunnable(() -> ball.getComponent(CircleComponent.class).position.set(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f)));
+                }
+            }).start();
+        }
+
+        // Left
+        if(ball.getComponent(CircleComponent.class).position.x <= 10) {
+            sideDirection = 1;
+
+            sound.play(1);
+        }
+        // Right
+        else if(ball.getComponent(CircleComponent.class).position.x > Gdx.graphics.getWidth()-13) {
+            sideDirection = -1;
+
+            sound.play(1);
         }
 
         for(int i=0; i<bricks.size(); i++) {
@@ -159,6 +198,8 @@ public final class Main extends ApplicationAdapter {
                 sideDirection = (byte)-sideDirection;
                 score++;
                 scoreLabel.setText(String.format("Score: %d", score));
+
+                sound.play(1);
             }
         }
 
@@ -186,6 +227,8 @@ public final class Main extends ApplicationAdapter {
             ImGui.end();
             ImGuiUI.render();
         }
+
+        if(bricks.isEmpty()) System.out.println("You win");
     }
 
     @Override
