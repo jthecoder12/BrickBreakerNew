@@ -5,7 +5,19 @@ dependencies {
   api "com.badlogicgames.ashley:ashley:$ashleyVersion"
   api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
-  api "com.kotcrab.vis:vis-ui:$visuiVersion"
+
+  // https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-backend-lwjgl3
+  api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+
+  // https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-freetype
+  api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+
+  api "io.github.spair:imgui-java-binding:$imguiVersion"
+  api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+  api "io.github.spair:imgui-java-natives-linux:$imguiVersion"
+  api "io.github.spair:imgui-java-natives-macos:$imguiVersion"
+  api "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"

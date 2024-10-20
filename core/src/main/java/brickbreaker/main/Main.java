@@ -1,5 +1,6 @@
 package brickbreaker.main;
 
+import brickbreaker.main.UI.ImGuiUI;
 import brickbreaker.main.components.BoxCollider;
 import brickbreaker.main.components.CircleCollider;
 import brickbreaker.main.components.CircleComponent;
@@ -15,17 +16,15 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisWindow;
-import com.kotcrab.vis.ui.widget.VisCheckBox;
+import imgui.ImGui;
+import imgui.ImGuiStyle;
+import imgui.type.ImBoolean;
 
 import java.util.ArrayList;
 
@@ -36,9 +35,11 @@ public final class Main extends ApplicationAdapter {
     private byte ballDirection = -1;
     private byte sideDirection = -1;
     private int score;
+    private final ImBoolean mouseMode = new ImBoolean();
+    private final ImBoolean settingsVisible = new ImBoolean();
+    private boolean positionAndSizeSet = false;
     private Label scoreLabel;
     private Stage stage;
-    private VisCheckBox mouseModeCheckbox;
     private Controller controller;
     private BitmapFont font;
     private final ArrayList<Brick> bricks = new ArrayList<>();
@@ -58,15 +59,12 @@ public final class Main extends ApplicationAdapter {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        VisUI.load();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Varela_Round/VarelaRound-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 30;
 
-        font = new BitmapFont(Gdx.files.internal("Varela_Round/Varela_Round.fnt"));
-
-        VisWindow window = new VisWindow("Settings");
-        window.setResizable(true);
-        window.setVisible(false);
-        window.setSize(300, 300);
-        window.setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f);
+        font = generator.generateFont(parameter);
+        generator.dispose();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
@@ -75,27 +73,19 @@ public final class Main extends ApplicationAdapter {
         scoreLabel.setPosition(0, Gdx.graphics.getHeight()-50);
         scoreLabel.setColor(1, 0, 0, 1);
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-
-        TextButton menuButton = new TextButton("Menu", buttonStyle);
-        menuButton.setPosition(Gdx.graphics.getWidth()/1.07f, 0);
-        menuButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if(button == 0) {
-                    window.setVisible(!window.isVisible());
-                }
-
-                return true;
-            }
-        });
-
-        mouseModeCheckbox = new VisCheckBox("Mouse Mode");
-        window.add(mouseModeCheckbox);
-
         stage.addActor(scoreLabel);
-        stage.addActor(menuButton);
-        stage.addActor(window);
+
+        ImGuiUI.initImGui();
+
+        final ImGuiStyle style = ImGui.getStyle();
+        final float borderRadius = 8;
+        style.setTabRounding(borderRadius);
+        style.setFrameRounding(borderRadius);
+        style.setGrabRounding(borderRadius);
+        style.setWindowRounding(borderRadius);
+        style.setPopupRounding(borderRadius);
+
+        ImGui.styleColorsDark(style);
     }
 
     @Override
@@ -119,13 +109,15 @@ public final class Main extends ApplicationAdapter {
         paddle.getComponent(BoxCollider.class).updatePosition(paddle.getComponent(RectComponent.class).position);
         ball.getComponent(CircleCollider.class).updatePosition(ball.getComponent(CircleComponent.class).position);
 
+        if(Gdx.input.isKeyJustPressed(Input.Keys.M)) settingsVisible.set(!settingsVisible.get());
+
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
         } else if(Gdx.input.isKeyPressed(Input.Keys.D)) {
             paddle.getComponent(RectComponent.class).position.add(new Vector2(15, 0));
         }
 
-        if(mouseModeCheckbox.isChecked()) {
+        if(mouseMode.get()) {
             paddle.getComponent(RectComponent.class).position.x = Gdx.input.getX()-(Gdx.graphics.getWidth()/2f-30)/4f;
         }
 
@@ -180,12 +172,26 @@ public final class Main extends ApplicationAdapter {
 
         stage.act(deltaTime);
         stage.draw();
+
+        if(settingsVisible.get()) {
+            ImGuiUI.loop();
+            ImGui.begin("Settings", settingsVisible);
+            if(!positionAndSizeSet) {
+                ImGui.setWindowPos(Gdx.graphics.getWidth()/4f, Gdx.graphics.getHeight()/4f);
+                ImGui.setWindowSize(Gdx.graphics.getWidth()/4f, Gdx.graphics.getHeight()/4f);
+
+                positionAndSizeSet = true;
+            }
+            ImGui.checkbox("Mouse Mode", mouseMode);
+            ImGui.end();
+            ImGuiUI.render();
+        }
     }
 
     @Override
     public void dispose() {
         font.dispose();
         stage.dispose();
-        VisUI.dispose();
+        ImGuiUI.dispose();
     }
 }
