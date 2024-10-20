@@ -25,6 +25,7 @@ public final class CircleCollider implements Component {
         return circle.overlaps(circleCollider.getCircle());
     }
 
+    @SuppressWarnings("unused")
     public boolean checkWith(@NotNull BoxCollider boxCollider) {
         return Intersector.overlaps(circle, boxCollider.getBox());
     }

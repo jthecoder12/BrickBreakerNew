@@ -20,8 +20,6 @@ public final class BoxCollider implements Component {
 
     public void updatePosition(Vector2 position) {
         box.setPosition(position);
-        System.out.println(position.x);
-        System.out.println(box.x);
     }
 
     @SuppressWarnings("unused")
