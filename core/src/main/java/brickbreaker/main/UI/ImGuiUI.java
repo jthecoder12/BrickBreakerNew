@@ -1,6 +1,7 @@
 package brickbreaker.main.UI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -12,6 +13,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 public final class ImGuiUI {
     private static ImGuiImplGlfw imGuiGlfw;
     private static ImGuiImplGl3 imGuiGl3;
+    private static InputProcessor tmpProcessor;
 
     private ImGuiUI() {
 
@@ -37,14 +39,24 @@ public final class ImGuiUI {
     }
 
     public static void loop() {
+        if(tmpProcessor != null) {
+            Gdx.input.setInputProcessor(tmpProcessor);
+            tmpProcessor = null;
+        }
+
+        imGuiGl3.newFrame();
         imGuiGlfw.newFrame();
         ImGui.newFrame();
     }
 
     public static void render() {
         ImGui.render();
-        imGuiGl3.newFrame();
         imGuiGl3.renderDrawData(ImGui.getDrawData());
+
+        if(ImGui.getIO().getWantCaptureKeyboard() || ImGui.getIO().getWantCaptureMouse()) {
+            tmpProcessor = Gdx.input.getInputProcessor();
+            Gdx.input.setInputProcessor(null);
+        }
     }
 
     public static void dispose() {

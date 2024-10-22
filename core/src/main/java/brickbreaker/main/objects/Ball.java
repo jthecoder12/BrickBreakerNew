@@ -1,5 +1,6 @@
 package brickbreaker.main.objects;
 
+import brickbreaker.main.Main;
 import brickbreaker.main.components.CircleCollider;
 import brickbreaker.main.components.CircleComponent;
 import com.badlogic.ashley.core.Engine;
@@ -9,10 +10,55 @@ import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
 
 public final class Ball extends Entity {
-    public Ball(@NotNull Engine engine) {
+    private final Main main;
+
+    public Ball(@NotNull Engine engine, Main main) {
         engine.addEntity(this);
 
         add(new CircleComponent(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), 15));
         add(new CircleCollider(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f), 15));
+
+        this.main = main;
+    }
+
+    public void render(int speed) {
+        getComponent(CircleComponent.class).render();
+        getComponent(CircleComponent.class).position.add(speed*1.75f*main.sideDirection, speed*main.ballDirection);
+
+        getComponent(CircleCollider.class).updatePosition(getComponent(CircleComponent.class).position);
+
+        // Top
+        if(getComponent(CircleComponent.class).position.y >= Gdx.graphics.getHeight()-10) {
+            main.ballDirection = -1;
+
+            main.sound.play(1);
+        }
+
+        // Reset
+        if(getComponent(CircleComponent.class).position.y <= 0) {
+            main.ballDirection = -1;
+            main.sideDirection = -1;
+
+            new Thread(() -> {
+                long time = System.currentTimeMillis();
+
+                while(System.currentTimeMillis() < time+500) {
+                    Gdx.app.postRunnable(() -> getComponent(CircleComponent.class).position.set(new Vector2(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f)));
+                }
+            }).start();
+        }
+
+        // Left
+        if(getComponent(CircleComponent.class).position.x <= 10) {
+            main.sideDirection = 1;
+
+            main.sound.play(1);
+        }
+        // Right
+        else if(getComponent(CircleComponent.class).position.x > Gdx.graphics.getWidth()-13) {
+            main.sideDirection = -1;
+
+            main.sound.play(1);
+        }
     }
 }
