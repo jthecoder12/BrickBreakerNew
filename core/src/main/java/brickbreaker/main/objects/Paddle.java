@@ -1,6 +1,5 @@
 package brickbreaker.main.objects;
 
-import brickbreaker.main.Main;
 import brickbreaker.main.components.BoxCollider;
 import brickbreaker.main.components.CircleCollider;
 import brickbreaker.main.components.CircleComponent;
