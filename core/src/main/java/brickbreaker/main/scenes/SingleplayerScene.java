@@ -36,7 +36,7 @@ public final class SingleplayerScene extends Scene {
     public Sound sound;
 
     @Override
-    public void extraInit() {
+    protected void extraInit() {
         PooledEngine engine = new PooledEngine();
 
         paddle = new Paddle(engine, this);
@@ -65,8 +65,6 @@ public final class SingleplayerScene extends Scene {
 
         stage.addActor(scoreLabel);
 
-        ImGuiUI.initImGui();
-
         final ImGuiStyle style = ImGui.getStyle();
         final float borderRadius = 8;
         style.setTabRounding(borderRadius);
@@ -81,7 +79,7 @@ public final class SingleplayerScene extends Scene {
     }
 
     @Override
-    public void extraRendering() {
+    protected void extraRendering() {
         ScreenUtils.clear(new Color(100/255f, 100/255f, 100/255f, 1));
 
         paddle.render(mouseMode, ball);
@@ -93,7 +91,7 @@ public final class SingleplayerScene extends Scene {
     }
 
     @Override
-    public void imGuiRendering() {
+    protected void imGuiRendering() {
         if(settingsVisible.get()) {
             ImGuiUI.loop();
             ImGui.begin("Settings", settingsVisible);
@@ -110,7 +108,7 @@ public final class SingleplayerScene extends Scene {
     }
 
     @Override
-    public void extraDisposal() {
+    protected void extraDisposal() {
         font.dispose();
     }
 }

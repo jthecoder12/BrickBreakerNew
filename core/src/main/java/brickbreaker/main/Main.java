@@ -1,7 +1,7 @@
 package brickbreaker.main;
 
 import brickbreaker.main.scenes.SceneManager;
-import brickbreaker.main.scenes.SingleplayerScene;
+import brickbreaker.main.scenes.TitleScene;
 import com.badlogic.gdx.ApplicationAdapter;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -9,10 +9,7 @@ public final class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
-        SingleplayerScene singleplayerScene = new SingleplayerScene();
-
-        SceneManager.setCurrentScene(singleplayerScene);
-        SceneManager.initScene();
+        SceneManager.setCurrentScene(new TitleScene());
     }
 
     @Override

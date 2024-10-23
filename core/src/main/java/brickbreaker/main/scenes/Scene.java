@@ -8,15 +8,24 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public abstract class Scene {
     protected Stage stage;
+    private boolean alreadyInitialized = false;
 
     protected abstract void extraInit();
     protected abstract void extraRendering();
-    protected abstract void imGuiRendering();
-    protected abstract void extraDisposal();
+    protected void imGuiRendering() {
+
+    }
+    protected void extraDisposal() {
+
+    }
 
     void init() {
-        stage = new Stage(new ScreenViewport());
-        extraInit();
+        if(!alreadyInitialized) {
+            stage = new Stage(new ScreenViewport());
+            extraInit();
+            ImGuiUI.initImGui();
+            alreadyInitialized = true;
+        }
     }
 
     void render() {
