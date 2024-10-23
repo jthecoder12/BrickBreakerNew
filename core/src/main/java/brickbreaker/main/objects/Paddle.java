@@ -5,6 +5,7 @@ import brickbreaker.main.components.BoxCollider;
 import brickbreaker.main.components.CircleCollider;
 import brickbreaker.main.components.CircleComponent;
 import brickbreaker.main.components.RectComponent;
+import brickbreaker.main.scenes.SingleplayerScene;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
@@ -14,13 +15,12 @@ import imgui.type.ImBoolean;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Dimension;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public final class Paddle extends Entity {
-    private final Main main;
-    private final Random random = new Random();
+    private final SingleplayerScene main;
 
-    public Paddle(@NotNull Engine engine, Main main) {
+    public Paddle(@NotNull Engine engine, SingleplayerScene main) {
         engine.addEntity(this);
 
         add(new RectComponent(new Vector2(Gdx.graphics.getWidth()/2f-30, Gdx.graphics.getHeight()/2f-250), new Dimension(300, 20)));
@@ -52,7 +52,7 @@ public final class Paddle extends Entity {
             } else if(ball.getComponent(CircleComponent.class).position.x > getComponent(RectComponent.class).position.x+(Gdx.graphics.getWidth()/2f-30)/4f) {
                 main.sideDirection = 1;
             } else {
-                if(random.nextInt(2) == 0) {
+                if(ThreadLocalRandom.current().nextBoolean()) {
                     main.sideDirection = 1;
                 } else {
                     main.sideDirection = -1;
