@@ -23,7 +23,11 @@ public abstract class Scene {
         if(!alreadyInitialized) {
             stage = new Stage(new ScreenViewport());
             extraInit();
-            ImGuiUI.initImGui();
+            if(!SceneManager.imGuiInitialized) {
+                ImGuiUI.initImGui();
+                SceneManager.imGuiInitialized = true;
+            }
+            Gdx.input.setInputProcessor(stage);
             alreadyInitialized = true;
         }
     }

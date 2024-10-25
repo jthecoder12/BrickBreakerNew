@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SceneManager {
     private static Scene currentScene;
+    static boolean imGuiInitialized = false;
 
     private SceneManager() {
 
