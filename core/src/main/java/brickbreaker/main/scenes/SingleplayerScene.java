@@ -33,6 +33,8 @@ public final class SingleplayerScene extends Scene {
     public Label scoreLabel;
     public Controller controller;
     private BitmapFont font;
+    private BitmapFont largeFont;
+    public Label winLabel;
     public Sound sound;
 
     @Override
@@ -54,16 +56,25 @@ public final class SingleplayerScene extends Scene {
         parameter.size = 30;
 
         font = generator.generateFont(parameter);
+        parameter.size = 75;
+        largeFont = generator.generateFont(parameter);
         generator.dispose();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
+        Label.LabelStyle largeLabelStyle = new Label.LabelStyle();
+        largeLabelStyle.font = largeFont;
 
         scoreLabel = new Label("Score: 0", labelStyle);
         scoreLabel.setPosition(0, Gdx.graphics.getHeight()-50);
         scoreLabel.setColor(1, 0, 0, 1);
 
+        winLabel = new Label("You win", largeLabelStyle);
+        winLabel.setPosition(Gdx.graphics.getWidth()/2.5f, Gdx.graphics.getHeight()/2f);
+        winLabel.setVisible(false);
+
         stage.addActor(scoreLabel);
+        stage.addActor(winLabel);
 
         final ImGuiStyle style = ImGui.getStyle();
         final float borderRadius = 8;
@@ -110,5 +121,6 @@ public final class SingleplayerScene extends Scene {
     @Override
     protected void extraDisposal() {
         font.dispose();
+        largeFont.dispose();
     }
 }

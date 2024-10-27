@@ -48,6 +48,6 @@ public final class BrickManager {
             }
         }
 
-        if(bricks.isEmpty()) System.out.println("You win");
+        if(bricks.isEmpty()) main.winLabel.setVisible(true);
     }
 }

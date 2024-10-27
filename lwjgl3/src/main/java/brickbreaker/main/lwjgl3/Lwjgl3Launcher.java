@@ -3,7 +3,6 @@ package brickbreaker.main.lwjgl3;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import brickbreaker.main.Main;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import static org.lwjgl.glfw.GLFW.glfwInitHint;
@@ -17,9 +16,8 @@ public class Lwjgl3Launcher {
         createApplication();
     }
 
-    @Contract(" -> new")
-    private static @NotNull Lwjgl3Application createApplication() {
-        return new Lwjgl3Application(new Main(), getDefaultConfiguration());
+    private static void createApplication() {
+        new Lwjgl3Application(new Main(), getDefaultConfiguration());
     }
 
     private static @NotNull Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
@@ -40,8 +38,6 @@ public class Lwjgl3Launcher {
         //// You may also need to configure GPU drivers to fully disable Vsync; this can cause screen tearing.
         configuration.setWindowedMode(1280, 720);
         configuration.setResizable(false);
-        //// You can change these files; they are in lwjgl3/src/main/resources/ .
-        configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         return configuration;
     }
 }
