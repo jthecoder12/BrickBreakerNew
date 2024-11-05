@@ -6,9 +6,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.LinkedList;
+
 public abstract class Scene {
     protected Stage stage;
     private boolean alreadyInitialized = false;
+    private final static LinkedList<Stage> stages = new LinkedList<>();
 
     protected abstract void extraInit();
     protected abstract void extraRendering();
@@ -22,6 +25,7 @@ public abstract class Scene {
     void init() {
         if(!alreadyInitialized) {
             stage = new Stage(new ScreenViewport());
+            stages.add(stage);
             extraInit();
             if(!SceneManager.imGuiInitialized) {
                 ImGuiUI.initImGui();
@@ -45,7 +49,9 @@ public abstract class Scene {
 
     void dispose() {
         extraDisposal();
-        stage.dispose();
+
+        for(Stage stage1 : stages) stage1.dispose();
+
         ImGuiUI.dispose();
     }
 

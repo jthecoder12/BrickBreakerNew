@@ -120,6 +120,7 @@ public final class SingleplayerScene extends Scene {
 
     @Override
     protected void extraDisposal() {
+        sound.dispose();
         font.dispose();
         largeFont.dispose();
     }

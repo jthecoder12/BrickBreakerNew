@@ -4,14 +4,18 @@ import brickbreaker.main.UI.ImGuiUI;
 import com.badlogic.gdx.Gdx;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
-import imgui.flag.ImGuiKey;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public final class MultiplayerScene extends Scene {
     private final ImString ipAddress = new ImString();
     private final ImInt port = new ImInt();
     private boolean positionAndSizeSet = false;
+    private Socket socket;
 
     @Override
     protected void extraInit() {
@@ -48,9 +52,30 @@ public final class MultiplayerScene extends Scene {
 
         if(ImGui.button("Connect")) {
             System.out.printf("Connecting to %s:%d", ipAddress.get(), port.get());
-        }
 
+            try {
+                socket = new Socket(ipAddress.get(), port.get());
+
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                out.println("hello");
+                out.println("world");
+                out.println("P1X45");
+
+                out.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         ImGui.end();
         ImGuiUI.render();
+    }
+
+    @Override
+    protected void extraDisposal() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
