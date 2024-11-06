@@ -2,14 +2,15 @@ package brickbreaker.main.scenes;
 
 import brickbreaker.main.UI.ImGuiUI;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Net;
+import com.badlogic.gdx.net.Socket;
+import com.badlogic.gdx.net.SocketHints;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
 import imgui.type.ImInt;
 import imgui.type.ImString;
-
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Socket;
+
 
 public final class MultiplayerScene extends Scene {
     private final ImString ipAddress = new ImString();
@@ -53,18 +54,14 @@ public final class MultiplayerScene extends Scene {
         if(ImGui.button("Connect")) {
             System.out.printf("Connecting to %s:%d", ipAddress.get(), port.get());
 
-            try {
-                socket = new Socket(ipAddress.get(), port.get());
+            socket = Gdx.net.newClientSocket(Net.Protocol.TCP, ipAddress.get(), port.get(), new SocketHints());
 
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                out.println("hello");
-                out.println("world");
-                out.println("P1X45");
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println("hello");
+            out.println("world");
+            out.println("P1X45");
 
-                out.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            out.close();
         }
         ImGui.end();
         ImGuiUI.render();
@@ -72,10 +69,6 @@ public final class MultiplayerScene extends Scene {
 
     @Override
     protected void extraDisposal() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        socket.dispose();
     }
 }

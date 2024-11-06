@@ -7,11 +7,8 @@ import brickbreaker.main.objects.bricks.BrickManager;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,24 +16,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
-import imgui.type.ImBoolean;
 
-public final class SingleplayerScene extends Scene {
-    private Paddle paddle;
-    public Ball ball;
-    public byte ballDirection = -1;
-    public byte sideDirection = -1;
-    public int score;
-    private final ImBoolean mouseMode = new ImBoolean();
-    private final ImBoolean settingsVisible = new ImBoolean();
-    private boolean positionAndSizeSet = false;
-    public Label scoreLabel;
-    public Controller controller;
-    private BitmapFont font;
-    private BitmapFont largeFont;
-    public Label winLabel;
-    public Sound sound;
-
+public final class SingleplayerScene extends GameScene {
     @Override
     protected void extraInit() {
         PooledEngine engine = new PooledEngine();
@@ -99,6 +80,21 @@ public final class SingleplayerScene extends Scene {
         if(Gdx.input.isKeyJustPressed(Input.Keys.M)) settingsVisible.set(!settingsVisible.get());
 
         BrickManager.renderBricks();
+
+        if(controller != null) {
+            if(challengeMode.get() && controller.canVibrate()) controller.startVibration(100, 1);
+            if(controller.getButton(controller.getMapping().buttonY) && !challengeModePressed) {
+                challengeMode.set(!challengeMode.get());
+
+                new Thread(() -> {
+                    while(controller.getButton(controller.getMapping().buttonY)) {
+                        challengeModePressed = true;
+                    }
+
+                    challengeModePressed = false;
+                }).start();
+            }
+        }
     }
 
     @Override
@@ -113,15 +109,9 @@ public final class SingleplayerScene extends Scene {
                 positionAndSizeSet = true;
             }
             ImGui.checkbox("Mouse Mode", mouseMode);
+            ImGui.checkbox("Challenge Mode for Controllers", challengeMode);
             ImGui.end();
             ImGuiUI.render();
         }
-    }
-
-    @Override
-    protected void extraDisposal() {
-        sound.dispose();
-        font.dispose();
-        largeFont.dispose();
     }
 }

@@ -45,6 +45,12 @@ public final class BrickManager {
                 main.scoreLabel.setText(String.format("Score: %d", main.score));
 
                 main.sound.play(1);
+
+                if(main.controller != null) {
+                    if(main.controller.canVibrate()) {
+                        main.controller.startVibration(100, 0.5f);
+                    }
+                }
             }
         }
 

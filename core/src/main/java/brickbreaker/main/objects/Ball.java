@@ -32,10 +32,22 @@ public final class Ball extends Entity {
             main.ballDirection = -1;
 
             main.sound.play(1);
+
+            if(main.controller != null) {
+                if(main.controller.canVibrate()) {
+                    main.controller.startVibration(100, 0.5f);
+                }
+            }
         }
 
         // Reset
         if(getComponent(CircleComponent.class).position.y <= 0) {
+            if(main.controller != null) {
+                if(main.controller.canVibrate()) {
+                    main.controller.startVibration(200, 1);
+                }
+            }
+
             main.ballDirection = -1;
             main.sideDirection = -1;
 
@@ -53,12 +65,24 @@ public final class Ball extends Entity {
             main.sideDirection = 1;
 
             main.sound.play(1);
+
+            if(main.controller != null) {
+                if(main.controller.canVibrate()) {
+                    main.controller.startVibration(100, 0.5f);
+                }
+            }
         }
         // Right
         else if(getComponent(CircleComponent.class).position.x > Gdx.graphics.getWidth()-13) {
             main.sideDirection = -1;
 
             main.sound.play(1);
+
+            if(main.controller != null) {
+                if(main.controller.canVibrate()) {
+                    main.controller.startVibration(100, 0.5f);
+                }
+            }
         }
     }
 }
