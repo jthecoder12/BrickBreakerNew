@@ -69,6 +69,6 @@ public final class MultiplayerScene extends Scene {
 
     @Override
     protected void extraDisposal() {
-        socket.dispose();
+        if(socket != null) socket.dispose();
     }
 }

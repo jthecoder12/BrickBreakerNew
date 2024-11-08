@@ -2,6 +2,8 @@ package brickbreaker.server;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,65 +12,73 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public final class Server implements Runnable {
-    private final int port;
+    private boolean stopping = false;
 
-    private float p1x, p1y, p2x, p2y;
+    private PrintWriter output;
+    private BufferedReader input;
 
-    private boolean running = false;
-
-    private Server(int port) {
-        this.port = port;
-    }
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
 
     @Override
     public void run() {
-        running = true;
+        StringBuilder serverOutputString = new StringBuilder();
 
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            Socket clientSocket = serverSocket.accept();
+        JFrame frame = new JFrame("Brick Breaker Server");
+        JTextPane serverOutput = new JTextPane();
+        JSpinner portSpinner = new JSpinner();
+        JButton startButton = new JButton("Start server");
+        JButton stopButton = new JButton("Stop server and exit");
+        JButton forceCloseButton = new JButton("Force close");
 
-            new Thread(() -> {
-                PrintWriter output;
-                BufferedReader input;
-                try {
-                    output = new PrintWriter(clientSocket.getOutputStream(), true);
-                    input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));;
+        serverOutput.setEditable(false);
+        serverOutput.setSize(new Dimension(50, 50));
 
-                    String line;
-                    while((line = input.readLine()) != null) {
-                        System.out.println(line);
+        startButton.addActionListener(e -> new Thread(() -> {
+            try {
+                serverSocket = new ServerSocket((int)portSpinner.getValue());
+                serverOutputString.append("Server started on port ").append((int)portSpinner.getValue()).append(". Waiting for client.");
+                serverOutput.setText(serverOutputString.toString());
 
-                        if(line.startsWith("P1X")) System.out.println("Got a player 1 x coordinate");
-                    }
-                } catch(IOException e) {
-                    throw new RuntimeException(e);
-                }
+                clientSocket = serverSocket.accept();
 
-                while(running) {
-                    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                        System.out.println("Shutting down server");
+                output = new PrintWriter(clientSocket.getOutputStream(), true);
+                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            } catch (IOException ex) {
+                if(!stopping) throw new RuntimeException(ex);
+            }
+        }).start());
 
-                        try {
-                            input.close();
-                            clientSocket.close();
-                            serverSocket.close();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        output.close();
-                    }));
-                }
-            }).start();
-        } catch (IOException e) {
-            running = false;
-            throw new RuntimeException(e);
-        }
+        stopButton.addActionListener(e -> {
+            stopping = true;
+
+            try {
+                if(clientSocket != null) clientSocket.close();
+                serverSocket.close();
+                if(output != null) output.close();
+                if(input != null) input.close();
+                frame.dispose();
+                System.exit(0);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        forceCloseButton.addActionListener(e -> System.exit(130));
+
+        frame.add(serverOutput);
+        frame.add(portSpinner);
+        frame.add(startButton);
+        frame.add(stopButton);
+        frame.add(forceCloseButton);
+        frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public static void main(String @NotNull [] args) {
-        System.out.printf("Using port: %d%n", Integer.parseInt(args[0]));
-
-        new Server(Integer.parseInt(args[0])).run();
+        new Server().run();
     }
 }

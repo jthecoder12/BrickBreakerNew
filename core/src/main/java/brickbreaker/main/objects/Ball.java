@@ -61,7 +61,7 @@ public final class Ball extends Entity {
         }
 
         // Left
-        if(getComponent(CircleComponent.class).position.x <= 10) {
+        if(getComponent(CircleComponent.class).position.x <= 18.7499990463f) {
             main.sideDirection = 1;
 
             main.sound.play(1);
@@ -73,7 +73,7 @@ public final class Ball extends Entity {
             }
         }
         // Right
-        else if(getComponent(CircleComponent.class).position.x > Gdx.graphics.getWidth()-13) {
+        else if(getComponent(CircleComponent.class).position.x > Gdx.graphics.getWidth()-18.7499990463f) {
             main.sideDirection = -1;
 
             main.sound.play(1);

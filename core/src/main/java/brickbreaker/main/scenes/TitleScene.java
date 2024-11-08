@@ -26,13 +26,14 @@ public final class TitleScene extends Scene {
         labelStyle.font = font;
 
         Label titleLabel = new Label("Brick Breaker", labelStyle);
-        titleLabel.setPosition(Gdx.graphics.getWidth()/2.4f, Gdx.graphics.getHeight()-50);
+        //titleLabel.setPosition(Gdx.graphics.getWidth()/2.4f, Gdx.graphics.getHeight()-50);
+        titleLabel.setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/1.05f, 1);
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
 
         TextButton singlePlayerButton = new TextButton("Singleplayer", buttonStyle);
-        singlePlayerButton.setPosition(Gdx.graphics.getWidth()/2.4f, Gdx.graphics.getHeight()/2f);
+        singlePlayerButton.setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/1.75f, 1);
         singlePlayerButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -45,7 +46,7 @@ public final class TitleScene extends Scene {
         });
 
         TextButton multiPlayerButton = new TextButton("Multiplayer", buttonStyle);
-        multiPlayerButton.setPosition(Gdx.graphics.getWidth()/2.35f, Gdx.graphics.getHeight()/3f);
+        multiPlayerButton.setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2.5f, 1);
         multiPlayerButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
