@@ -16,11 +16,14 @@ import java.util.Objects;
 public final class Server implements Runnable {
     private boolean stopping = false;
 
-    private PrintWriter output;
-    private BufferedReader input;
+    private PrintWriter output1;
+    private BufferedReader input1;
+    private PrintWriter output2;
+    private BufferedReader input2;
 
     private ServerSocket serverSocket;
-    private Socket clientSocket;
+    private Socket player1;
+    private Socket player2;
 
     @Override
     public void run() {
@@ -40,20 +43,33 @@ public final class Server implements Runnable {
         startButton.addActionListener(e -> new Thread(() -> {
             try {
                 serverSocket = new ServerSocket((int)portSpinner.getValue());
-                serverOutputString.append("Server started on port ").append((int)portSpinner.getValue()).append(". Waiting for client.");
+                serverOutputString.append("Server started on port ").append((int)portSpinner.getValue()).append(". Waiting for client.\n");
                 serverOutput.setText(serverOutputString.toString());
 
-                clientSocket = serverSocket.accept();
+                player1 = serverSocket.accept();
 
-                output = new PrintWriter(clientSocket.getOutputStream(), true);
-                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                serverOutputString.append("Client connected, waiting for another client.\n");
+                serverOutput.setText(serverOutputString.toString());
+
+                player2 = serverSocket.accept();
+
+                serverOutputString.append("Second client connected.\n");
+                serverOutput.setText(serverOutputString.toString());
 
                 while(!stopping) {
-                    if(!Objects.equals(output, new PrintWriter(clientSocket.getOutputStream(), true))) output = new PrintWriter(clientSocket.getOutputStream(), true);
-                    if(clientSocket.getInputStream().available() != 0) {
-                        input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    if(!Objects.equals(output1, new PrintWriter(player1.getOutputStream(), true))) output1 = new PrintWriter(player1.getOutputStream(), true);
+                    if(player1.getInputStream().available() != 0) {
+                        input1 = new BufferedReader(new InputStreamReader(player1.getInputStream()));
 
-                        serverOutputString.append(input.readLine()).append("\n");
+                        serverOutputString.append("Player 1: ").append(input1.readLine()).append("\n");
+                        serverOutput.setText(serverOutputString.toString());
+                    }
+
+                    if(!Objects.equals(output2, new PrintWriter(player2.getOutputStream(), true))) output2 = new PrintWriter(player2.getOutputStream(), true);
+                    if(player2.getInputStream().available() != 0) {
+                        input2 = new BufferedReader(new InputStreamReader(player2.getInputStream()));
+
+                        serverOutputString.append("Player 2: ").append(input2.readLine()).append("\n");
                         serverOutput.setText(serverOutputString.toString());
                     }
                 }
@@ -66,10 +82,13 @@ public final class Server implements Runnable {
             stopping = true;
 
             try {
-                if(clientSocket != null) clientSocket.close();
+                if(player1 != null) player1.close();
+                if(player2 != null) player2.close();
                 serverSocket.close();
-                if(output != null) output.close();
-                if(input != null) input.close();
+                if(output1 != null) output1.close();
+                if(input1 != null) input1.close();
+                if(output2 != null) output2.close();
+                if(input2 != null) input2.close();
                 frame.dispose();
                 System.exit(0);
             } catch (IOException ex) {
