@@ -16,6 +16,7 @@ public final class MultiplayerScene extends Scene {
     private final ImString ipAddress = new ImString();
     private final ImInt port = new ImInt();
     private boolean positionAndSizeSet = false;
+    private PrintWriter out;
     private Socket socket;
 
     @Override
@@ -56,19 +57,21 @@ public final class MultiplayerScene extends Scene {
 
             socket = Gdx.net.newClientSocket(Net.Protocol.TCP, ipAddress.get(), port.get(), new SocketHints());
 
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out = new PrintWriter(socket.getOutputStream(), true);
             out.println("hello");
             out.println("world");
             out.println("P1X45");
-
-            out.close();
         }
+
+        if(ImGui.button("Hello")) out.println("hello world");
+
         ImGui.end();
         ImGuiUI.render();
     }
 
     @Override
     protected void extraDisposal() {
+        if(out != null) out.close();
         if(socket != null) socket.dispose();
     }
 }

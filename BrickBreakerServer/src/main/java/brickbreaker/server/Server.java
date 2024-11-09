@@ -1,15 +1,17 @@
 package brickbreaker.server;
 
+import com.github.weisj.darklaf.LafManager;
+import com.github.weisj.darklaf.theme.OneDarkTheme;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 public final class Server implements Runnable {
     private boolean stopping = false;
@@ -22,6 +24,8 @@ public final class Server implements Runnable {
 
     @Override
     public void run() {
+        LafManager.install(new OneDarkTheme());
+
         StringBuilder serverOutputString = new StringBuilder();
 
         JFrame frame = new JFrame("Brick Breaker Server");
@@ -32,7 +36,6 @@ public final class Server implements Runnable {
         JButton forceCloseButton = new JButton("Force close");
 
         serverOutput.setEditable(false);
-        serverOutput.setSize(new Dimension(50, 50));
 
         startButton.addActionListener(e -> new Thread(() -> {
             try {
@@ -44,6 +47,16 @@ public final class Server implements Runnable {
 
                 output = new PrintWriter(clientSocket.getOutputStream(), true);
                 input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                while(!stopping) {
+                    if(!Objects.equals(output, new PrintWriter(clientSocket.getOutputStream(), true))) output = new PrintWriter(clientSocket.getOutputStream(), true);
+                    if(clientSocket.getInputStream().available() != 0) {
+                        input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                        serverOutputString.append(input.readLine()).append("\n");
+                        serverOutput.setText(serverOutputString.toString());
+                    }
+                }
             } catch (IOException ex) {
                 if(!stopping) throw new RuntimeException(ex);
             }
@@ -72,7 +85,7 @@ public final class Server implements Runnable {
         frame.add(stopButton);
         frame.add(forceCloseButton);
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-        frame.setSize(400, 300);
+        frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
