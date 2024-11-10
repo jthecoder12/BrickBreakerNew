@@ -5,17 +5,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
 import imgui.type.ImInt;
 import imgui.type.ImString;
 import java.io.PrintWriter;
+import java.util.Objects;
 
 
 public final class MultiplayerScene extends Scene {
     private final ImString ipAddress = new ImString();
     private final ImInt port = new ImInt();
+
     private boolean positionAndSizeSet = false;
+    private String errorString;
     private PrintWriter out;
     private Socket socket;
 
@@ -53,17 +57,24 @@ public final class MultiplayerScene extends Scene {
         ImGui.inputInt("Port", port);
 
         if(ImGui.button("Connect")) {
-            System.out.printf("Connecting to %s:%d", ipAddress.get(), port.get());
+            System.out.printf("Connecting to %s:%d%n", ipAddress.get(), port.get());
 
-            socket = Gdx.net.newClientSocket(Net.Protocol.TCP, ipAddress.get(), port.get(), new SocketHints());
+            try {
+                socket = Gdx.net.newClientSocket(Net.Protocol.TCP, ipAddress.get(), port.get(), new SocketHints());
 
-            out = new PrintWriter(socket.getOutputStream(), true);
-            out.println("hello");
-            out.println("world");
-            out.println("P1X45");
+                out = new PrintWriter(socket.getOutputStream(), true);
+                out.println("hello");
+                out.println("world");
+                out.println("P1X45");
+            } catch(GdxRuntimeException e) {
+                errorString = e.getCause().toString();
+                System.err.println(errorString);
+            }
         }
 
-        if(ImGui.button("Hello")) out.println("hello world");
+        if(ImGui.button("Hello") && out != null) out.println("hello world");
+
+        if(Objects.equals(errorString, "java.net.ConnectException: Connection refused")) ImGui.text("Connection refused");
 
         ImGui.end();
         ImGuiUI.render();

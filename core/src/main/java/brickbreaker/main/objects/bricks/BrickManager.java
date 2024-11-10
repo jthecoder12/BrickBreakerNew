@@ -2,9 +2,11 @@ package brickbreaker.main.objects.bricks;
 
 import brickbreaker.main.components.BoxCollider;
 import brickbreaker.main.components.CircleCollider;
+import brickbreaker.main.components.RectComponent;
 import brickbreaker.main.scenes.SingleplayerScene;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -20,16 +22,31 @@ public final class BrickManager {
     public static void initializeBricks(PooledEngine engine, SingleplayerScene main) {
         BrickManager.main = main;
 
-        for(int i=0; i<10; i++) {
-            bricks.add(new Brick(engine, new Vector2((Gdx.graphics.getWidth()/10f)*i, Gdx.graphics.getHeight()/1.04499274311f)));
-        }
+        boolean grayBrick = false;
 
         for(int i=0; i<10; i++) {
-            bricks.add(new Brick(engine, new Vector2((Gdx.graphics.getWidth()/10f)*i, Gdx.graphics.getHeight()/1.04499274311f-30)));
+            Brick brick = new Brick(engine, new Vector2((Gdx.graphics.getWidth()/10f)*i, Gdx.graphics.getHeight()/1.04499274311f));
+            if(grayBrick) brick.getComponent(RectComponent.class).setColor(Color.GRAY);
+            bricks.add(brick);
+            grayBrick = !grayBrick;
         }
 
+        grayBrick = true;
+
         for(int i=0; i<10; i++) {
-            bricks.add(new Brick(engine, new Vector2((Gdx.graphics.getWidth()/10f)*i, Gdx.graphics.getHeight()/1.04499274311f-60)));
+            Brick brick = new Brick(engine, new Vector2((Gdx.graphics.getWidth()/10f)*i, Gdx.graphics.getHeight()/1.04499274311f-30));
+            if(grayBrick) brick.getComponent(RectComponent.class).setColor(Color.GRAY);
+            bricks.add(brick);
+            grayBrick = !grayBrick;
+        }
+
+        grayBrick = false;
+
+        for(int i=0; i<10; i++) {
+            Brick brick = new Brick(engine, new Vector2((Gdx.graphics.getWidth()/10f)*i, Gdx.graphics.getHeight()/1.04499274311f-60));
+            if(grayBrick) brick.getComponent(RectComponent.class).setColor(Color.GRAY);
+            bricks.add(brick);
+            grayBrick = !grayBrick;
         }
     }
 

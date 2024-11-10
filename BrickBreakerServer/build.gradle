@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'brickbreaker.server'
-version = 'unspecified'
+version = '0.1b'
 
 repositories {
     mavenCentral()
@@ -12,4 +12,14 @@ repositories {
 dependencies {
     implementation "org.jetbrains:annotations:20.1.0"
     implementation "com.github.weisj:darklaf-core:3.0.2"
+}
+
+tasks.register("fatJar", Jar) {
+    manifest {
+        attributes "Main-Class": "brickbreaker.server.Server"
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)}}
+    with jar
 }
