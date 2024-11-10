@@ -4,6 +4,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import brickbreaker.main.Main;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.Platform;
 
 import static org.lwjgl.glfw.GLFW.glfwInitHint;
 import static org.lwjgl.glfw.GLFW.GLFW_PLATFORM;
@@ -21,9 +22,7 @@ public class Lwjgl3Launcher {
     }
 
     private static @NotNull Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
-        if(System.getProperty("os.name").contains("Linux")) {
-            glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
-        }
+        if(Platform.get() == Platform.LINUX) glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
 
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("Brick Breaker");
