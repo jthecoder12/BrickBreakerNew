@@ -48,6 +48,9 @@ public final class Server implements Runnable {
 
                 player1 = serverSocket.accept();
 
+                output1 = new PrintWriter(player1.getOutputStream(), true);
+                output1.println("cli_wait");
+
                 serverOutputString.append("Client connected, waiting for another client.\n");
                 serverOutput.setText(serverOutputString.toString());
 

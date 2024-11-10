@@ -1,8 +1,7 @@
 package brickbreaker.main.scenes;
 
 import brickbreaker.main.UI.ImGuiUI;
-import brickbreaker.main.components.CircleComponent;
-import brickbreaker.main.components.RectComponent;
+import brickbreaker.main.ai.AIPlayer;
 import brickbreaker.main.objects.Ball;
 import brickbreaker.main.objects.Paddle;
 import brickbreaker.main.objects.bricks.BrickManager;
@@ -21,7 +20,8 @@ import imgui.ImGuiStyle;
 import imgui.type.ImBoolean;
 
 public final class SingleplayerScene extends GameScene {
-    private final ImBoolean followPaddle = new ImBoolean();
+    private final ImBoolean aiMode = new ImBoolean();
+    private AIPlayer aiPlayer;
 
     @Override
     protected void extraInit() {
@@ -73,6 +73,10 @@ public final class SingleplayerScene extends GameScene {
         ImGui.styleColorsDark(style);
 
         sound = Gdx.audio.newSound(Gdx.files.internal("ping_pong_8bit_beeep.ogg"));
+
+        aiPlayer = new AIPlayer();
+        aiPlayer.setPaddle(paddle);
+        aiPlayer.init();
     }
 
     @Override
@@ -101,7 +105,7 @@ public final class SingleplayerScene extends GameScene {
             }
         }
 
-        if(followPaddle.get()) paddle.getComponent(RectComponent.class).position.x = ball.getComponent(CircleComponent.class).position.x - (float) paddle.getComponent(RectComponent.class).getSize().getWidth()/4f;
+        if(aiMode.get()) aiPlayer.update();
     }
 
     @Override
@@ -117,7 +121,7 @@ public final class SingleplayerScene extends GameScene {
             }
             ImGui.checkbox("Mouse Mode", mouseMode);
             ImGui.checkbox("Challenge Mode for Controllers", challengeMode);
-            ImGui.checkbox("Follow paddle", followPaddle);
+            ImGui.checkbox("AI Mode", aiMode);
             ImGui.end();
             ImGuiUI.render();
         }
