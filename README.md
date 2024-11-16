@@ -10,7 +10,6 @@ Web Version: [Click Here](https://jthecoder12.github.io/BrickBreakerNew)
 The web version won't be as good as I had to minimize it for TeaVM support so there is no multiplayer, controller support, or ImGui menu. The positioning may also be off as the game takes up the entire browser page.
 
 Images:
-
 ![titlescreen](https://github.com/user-attachments/assets/1b193243-0a41-447f-9fdb-51e1d2349ca6)
 ![singleplayer](https://github.com/user-attachments/assets/d0bbf897-b76b-4747-ae98-f3927d525b5f)
 ![multiplayer](https://github.com/user-attachments/assets/4f3c6017-49c2-4652-8d05-a629fd0ac01d)
