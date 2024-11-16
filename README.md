@@ -20,3 +20,7 @@ Singleplayer gameplay:
 
 https://github.com/user-attachments/assets/02094a3f-aed4-4348-b6c6-212bdbc6f4ea
 
+To build yourself:
+Download the source code,
+Run <code>./gradlew -p lwjgl3 dist</code> on Linux/MacOS or <code>.\gradlew.bat -p lwjgl3 dist</code> on Windows,
+The .jar file should be in **lwjgl3/build/libs**.
