@@ -33,11 +33,8 @@ public final class Paddle extends Entity {
 
         getComponent(BoxCollider.class).updatePosition(getComponent(RectComponent.class).position);
 
-        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-            getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
-        } else if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-            getComponent(RectComponent.class).position.add(new Vector2(15, 0));
-        }
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) getComponent(RectComponent.class).position.add(new Vector2(-1000*Gdx.graphics.getDeltaTime(), 0));
+        else if(Gdx.input.isKeyPressed(Input.Keys.D)) getComponent(RectComponent.class).position.add(new Vector2(1000*Gdx.graphics.getDeltaTime(), 0));
 
         if(mouseMode.get()) getComponent(RectComponent.class).position.x = Gdx.input.getX()-(Gdx.graphics.getWidth()/2f-30)/4f;
 
@@ -68,11 +65,8 @@ public final class Paddle extends Entity {
         }
 
         if(main.controller != null) {
-            if(main.controller.getButton(main.controller.getMapping().buttonDpadLeft)) {
-                getComponent(RectComponent.class).position.add(new Vector2(-15, 0));
-            } else if(main.controller.getButton(main.controller.getMapping().buttonDpadRight)) {
-                getComponent(RectComponent.class).position.add(new Vector2(15, 0));
-            }
+            if(main.controller.getButton(main.controller.getMapping().buttonDpadLeft)) getComponent(RectComponent.class).position.add(new Vector2(-1000*Gdx.graphics.getDeltaTime(), 0));
+            else if(main.controller.getButton(main.controller.getMapping().buttonDpadRight)) getComponent(RectComponent.class).position.add(new Vector2(1000*Gdx.graphics.getDeltaTime(), 0));
         }
     }
 }

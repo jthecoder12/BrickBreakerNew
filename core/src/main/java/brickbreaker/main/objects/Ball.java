@@ -23,7 +23,7 @@ public final class Ball extends Entity {
 
     public void render(int speed) {
         getComponent(CircleComponent.class).render();
-        getComponent(CircleComponent.class).position.add(speed*1.75f*main.sideDirection, speed*main.ballDirection);
+        getComponent(CircleComponent.class).position.add(speed*105*Gdx.graphics.getDeltaTime()*main.sideDirection, speed*60*Gdx.graphics.getDeltaTime()*main.ballDirection);
 
         getComponent(CircleCollider.class).updatePosition(getComponent(CircleComponent.class).position);
 
